@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,14 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
@@ -144,14 +141,12 @@ fun LoginScreen(onLogin: (String) -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             if (isPortrait) {
-                // Diseño vertical
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     LoginContent(correo, contrasena, onLogin,
                         onCorreoChange = { correo = it },
                         onContrasenaChange = { contrasena = it })
                 }
             } else {
-                // Diseño horizontal (landscape)
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -174,49 +169,75 @@ fun LoginContent(
     onCorreoChange: (String) -> Unit,
     onContrasenaChange: (String) -> Unit
 ) {
-    Text("Bienvenido", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-    Spacer(modifier = Modifier.height(20.dp))
-
-    OutlinedTextField(
-        value = correo,
-        onValueChange = onCorreoChange,
-        label = { Text("Correo") },
-        placeholder = { Text("Ingresa tu correo") },
-        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-        singleLine = true,
-        modifier = Modifier.fillMaxWidth(0.9f)
-    )
-
-    Spacer(modifier = Modifier.height(12.dp))
-
-    OutlinedTextField(
-        value = contrasena,
-        onValueChange = onContrasenaChange,
-        label = { Text("Contraseña") },
-        placeholder = { Text("Ingresa tu contraseña") },
-        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        singleLine = true,
-        modifier = Modifier.fillMaxWidth(0.9f)
-    )
-
-    Spacer(modifier = Modifier.height(20.dp))
-
-    Button(
-        onClick = { onLogin(correo) },
-        modifier = Modifier.fillMaxWidth(0.9f)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Acceder", fontSize = 16.sp)
+        Text("Bienvenido", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Inicia sesión para continuar", fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(32.dp))
+
+        OutlinedTextField(
+            value = correo,
+            onValueChange = onCorreoChange,
+            label = { Text("Correo electrónico") },
+            placeholder = { Text("ejemplo@correo.com") },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = contrasena,
+            onValueChange = onContrasenaChange,
+            label = { Text("Contraseña") },
+            placeholder = { Text("••••••••") },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = { onLogin(correo) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = CircleShape
+        ) {
+            Text("Acceder", fontSize = 16.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = {}) {
+                Text("¿Olvidaste tu contraseña?", fontSize = 13.sp)
+            }
+            TextButton(onClick = {}) {
+                Text("Registrarse", fontSize = 13.sp)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            "Al continuar, aceptas nuestros Términos y Condiciones y Política de Privacidad.",
+            fontSize = 12.sp,
+            lineHeight = 14.sp
+        )
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Text(
-        "Al continuar, aceptas nuestros Términos y Condiciones y Política de Privacidad.",
-        fontSize = 12.sp
-    )
 }
+
 
 
 @Composable
@@ -239,7 +260,6 @@ fun CarritoScreen() {
     }
 }
 
-/* ✅ NUEVO PERFIL CON CONFIGURACIÓN Y CAMBIO DE TEMA */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilScreen(correo: String, onThemeChange: () -> Unit) {
@@ -266,7 +286,6 @@ fun PerfilScreen(correo: String, onThemeChange: () -> Unit) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Imagen de perfil (puedes reemplazar con imagen real)
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = null,
@@ -293,7 +312,7 @@ fun PerfilScreen(correo: String, onThemeChange: () -> Unit) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Button(onClick = { /* Lógica de cerrar sesión */ }) {
+            Button(onClick = { }) {
                 Icon(Icons.Default.ExitToApp, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Cerrar Sesión")
