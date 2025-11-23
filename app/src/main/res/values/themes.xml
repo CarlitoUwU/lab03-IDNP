@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Tema simple (solo vista clara). Usar el parent Android Material clásico para compatibilidad
+        con la versión de dependencias presentes en el proyecto. -->
     <style name="Theme.Lab03" parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>

@@ -1,65 +1,64 @@
+// MainActivity.kt
 package com.example.lab03
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var themePreferences: ThemePreferences
+    private val viewModel: ProductViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        themePreferences = ThemePreferences(this)
-
         setContent {
-            val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
-
-            AppTheme(isDarkMode) {
-                val navController = rememberNavController()
-                AppNavigation(
-                    navController = navController,
-                    isDarkMode = isDarkMode,
-                    onThemeChange = { enabled ->
-                        lifecycleScope.launch {
-                            themePreferences.saveDarkMode(enabled)
-                        }
-                    }
-                )
-            }
+            AppContent(viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun AppNavigation(
-    navController: NavHostController,
-    isDarkMode: Boolean,
-    onThemeChange: (Boolean) -> Unit
-) {
-    NavHost(
-        navController = navController,
-        startDestination = "configuracion"
-    ) {
-        composable("configuracion") {
-            PantallaConfiguracion(
-                isDarkMode = isDarkMode,
-                onThemeChange = onThemeChange,
-                onContinue = { navController.navigate("catalogo") }
-            )
-        }
-        composable("catalogo") {
-            ListaProductosScreen()
+fun AppContent(viewModel: ProductViewModel) {
+    val navController = rememberNavController()
+
+    MaterialTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            NavHost(navController = navController, startDestination = "list") {
+                composable("list") {
+                    val products by viewModel.products.collectAsState()
+                    ProductListScreen(
+                        products = products,
+                        onAddClick = { navController.navigate("add") },
+                        onDelete = { product -> viewModel.removeProduct(product) },
+                        onClearAll = { viewModel.clearAll() }
+                    )
+                }
+                composable("add") {
+                    AddProductScreen(
+                        onSave = { name, desc, priceStr, category ->
+                            val price = priceStr.toDoubleOrNull() ?: 0.0
+                            viewModel.addProduct(name.trim(), desc.trim(), price, category.trim())
+                            navController.popBackStack()
+                        },
+                        onCancel = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewApp() {
 }
