@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.example.lab03
 
 import android.os.Bundle
@@ -14,6 +13,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
 
@@ -21,6 +25,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val testRequest = OneTimeWorkRequestBuilder<LogWorker>().build()
+        WorkManager.getInstance(this).enqueue(testRequest)
+
+        val workRequest =
+            PeriodicWorkRequestBuilder<LogWorker>(5, TimeUnit.MINUTES)
+                .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "logWorker",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
+
         setContent {
             AppContent(viewModel = viewModel)
         }
